@@ -1,12 +1,12 @@
 package com.example.skinder
 
-import android.content.Intent
+
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.DatePicker
 import android.widget.EditText
-import androidx.core.view.get
+import android.widget.Toast
 
 private class UserDetailReturn<fn, ln, ea, DOB>(
     val firstName:fn,
@@ -16,11 +16,14 @@ private class UserDetailReturn<fn, ln, ea, DOB>(
 
 )
 class RegisterActivity : AppCompatActivity() {
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        fun getUserDetails():UserDetailReturn<String, String, String, String>{
+        fun getUserDetails(): UserDetailReturn<String, String, String, String> {
 
             val firstName = findViewById<EditText>(R.id.etFirstName).text.toString()
             val lastName = findViewById<EditText>(R.id.etLastName).text.toString()
@@ -28,45 +31,73 @@ class RegisterActivity : AppCompatActivity() {
             val datePickerUnit = findViewById<DatePicker>(R.id.dpDOBPicker)
             val day = datePickerUnit.dayOfMonth
             val month = (datePickerUnit.month + 1)
-            var year = datePickerUnit.year.toString()
-            val birthDate = day.toString()+month.toString()+year.toString()
+            val year = datePickerUnit.year.toString()
+            var birthDate = day.toString() + month.toString() + year
 
-            if (day < 10){
+
+            if ((day < 10) && (month < 10)) {
                 var dayReal = day.toString()
                 dayReal = "0" + dayReal
-                val monthReal = day.toString()
-
-                val birthDate = dayReal+monthReal+year
-                return UserDetailReturn(firstName, lastName, emailAddress, birthDate)
-
-            }else if(month < 10){
-                var monthReal = day.toString()
+                var monthReal = month.toString()
                 monthReal = "0" + monthReal
-                val dayReal = day.toString()
 
-                val birthDate = dayReal+monthReal+year
+                var birthDate = dayReal + monthReal + year
                 return UserDetailReturn(firstName, lastName, emailAddress, birthDate)
 
-            }else if ((day < 10) && (month < 10)){
+            } else if (day < 10) {
                 var dayReal = day.toString()
                 dayReal = "0" + dayReal
+                var monthReal = month.toString()
 
-                var monthReal = day.toString()
+                var birthDate = dayReal + monthReal + year
+                return UserDetailReturn(firstName, lastName, emailAddress, birthDate)
+
+            } else if (month < 10) {
+                var monthReal = month.toString()
                 monthReal = "0" + monthReal
 
+                var dayReal = day.toString()
 
-                val birthDate = dayReal+monthReal+year
+
+                var birthDate = dayReal + monthReal + year
 
                 return UserDetailReturn(firstName, lastName, emailAddress, birthDate)
-            }else{
+            } else {
                 return UserDetailReturn(firstName, lastName, emailAddress, birthDate)
             }
 
+
         }
 
+
+
         val createAccountButton: Button = findViewById(R.id.btnCreateAccount)
-        createAccountButton.setOnClickListener{
-            println(getUserDetails().firstName)
+        createAccountButton.setOnClickListener {
+            var userDetails = getUserDetails()
+            val db = DatabaseHelper(this, null)
+            println(userDetails.firstName)
+            println(userDetails.lastName)
+            println(userDetails.emailAddress)
+            println(userDetails.birthDate)
+
+            db.createNewAccount(userDetails.firstName, userDetails.lastName, userDetails.emailAddress, userDetails.birthDate)
+            Toast.makeText(this, "${userDetails.emailAddress}  was added to the database", Toast.LENGTH_LONG).show()
+
+
+
+        }
+
+        val viewDatabaseButton: Button = findViewById(R.id.btnviewDatabase)
+        viewDatabaseButton.setOnClickListener{
+            val db = DatabaseHelper(this, null)
+            val cursor = db.getName()
+            cursor!!.moveToFirst()
+            while(cursor.moveToNext()) {
+                println(cursor.getString(0))
+            }
+
+            cursor.close()
+
         }
 
 

@@ -7,28 +7,30 @@ import android.widget.Button
 import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.Toast
+import android.database.sqlite.SQLiteDatabase
 
-private class UserDetailReturn<fn, ln, ea, DOB>(
+private class UserDetailReturn<fn, ln, ea, DOB, pw>(
     val firstName:fn,
     val lastName:ln,
     val emailAddress:ea,
-    val birthDate:DOB
+    val birthDate:DOB,
+    val accountPassword:pw
 
 )
 class RegisterActivity : AppCompatActivity() {
-
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        fun getUserDetails(): UserDetailReturn<String, String, String, String> {
+
+
+        fun getUserDetails(): UserDetailReturn<String, String, String, String, String> {
 
             val firstName = findViewById<EditText>(R.id.etFirstName).text.toString()
             val lastName = findViewById<EditText>(R.id.etLastName).text.toString()
             val emailAddress = findViewById<EditText>(R.id.eteEmailAddress).text.toString()
             val datePickerUnit = findViewById<DatePicker>(R.id.dpDOBPicker)
+            val accountPassword = findViewById<EditText>(R.id.etaccountPassword).text.toString()
             val day = datePickerUnit.dayOfMonth
             val month = (datePickerUnit.month + 1)
             val year = datePickerUnit.year.toString()
@@ -42,7 +44,7 @@ class RegisterActivity : AppCompatActivity() {
                 monthReal = "0" + monthReal
 
                 var birthDate = dayReal + monthReal + year
-                return UserDetailReturn(firstName, lastName, emailAddress, birthDate)
+                return UserDetailReturn(firstName, lastName, emailAddress, birthDate, accountPassword)
 
             } else if (day < 10) {
                 var dayReal = day.toString()
@@ -50,7 +52,7 @@ class RegisterActivity : AppCompatActivity() {
                 var monthReal = month.toString()
 
                 var birthDate = dayReal + monthReal + year
-                return UserDetailReturn(firstName, lastName, emailAddress, birthDate)
+                return UserDetailReturn(firstName, lastName, emailAddress, birthDate, accountPassword)
 
             } else if (month < 10) {
                 var monthReal = month.toString()
@@ -61,15 +63,13 @@ class RegisterActivity : AppCompatActivity() {
 
                 var birthDate = dayReal + monthReal + year
 
-                return UserDetailReturn(firstName, lastName, emailAddress, birthDate)
+                return UserDetailReturn(firstName, lastName, emailAddress, birthDate, accountPassword)
             } else {
-                return UserDetailReturn(firstName, lastName, emailAddress, birthDate)
+                return UserDetailReturn(firstName, lastName, emailAddress, birthDate, accountPassword)
             }
 
 
         }
-
-
 
         val createAccountButton: Button = findViewById(R.id.btnCreateAccount)
         createAccountButton.setOnClickListener {
@@ -79,9 +79,12 @@ class RegisterActivity : AppCompatActivity() {
             println(userDetails.lastName)
             println(userDetails.emailAddress)
             println(userDetails.birthDate)
+            println(userDetails.accountPassword)
 
-            db.createNewAccount(userDetails.firstName, userDetails.lastName, userDetails.emailAddress, userDetails.birthDate)
+
+            db.createNewAccount(userDetails.firstName, userDetails.lastName, userDetails.emailAddress, userDetails.birthDate, userDetails.accountPassword)
             Toast.makeText(this, "${userDetails.emailAddress}  was added to the database", Toast.LENGTH_LONG).show()
+
 
 
 
@@ -94,6 +97,8 @@ class RegisterActivity : AppCompatActivity() {
             cursor!!.moveToFirst()
             while(cursor.moveToNext()) {
                 println(cursor.getString(0))
+
+
             }
 
             cursor.close()

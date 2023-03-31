@@ -17,7 +17,7 @@ class DatabaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory?):
 
     override fun onCreate(db: SQLiteDatabase) {
         val databaseInitializerQuery =
-            ("CREATE TABLE $TABLE_NAME (emailAddress STRING PRIMARY KEY, firstName STRING, lastName STRING, birthDate STRING)")
+            ("CREATE TABLE $TABLE_NAME (emailAddress STRING PRIMARY KEY, firstName STRING, lastName STRING, birthDate STRING, accountPassword STRING)")
 
         db.execSQL(databaseInitializerQuery)
     }
@@ -32,22 +32,46 @@ class DatabaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory?):
         firstName: String,
         lastName: String,
         emailAddress: String,
-        birthDate: String
+        birthDate: String,
+        accountPassword: String
     ) {
 
+        val defaults = ContentValues()
+
+        defaults.put("firstName", "DEFAULT")
+        defaults.put("lastName", "DEFAULT")
+        defaults.put("birthDate", "DEFAULT")
+        defaults.put("accountPassword", "DEFAULT")
         val values = ContentValues()
 
         values.put("firstName", firstName)
         values.put("lastName", lastName)
         values.put("emailAddress", emailAddress)
         values.put("birthDate", birthDate)
+        values.put("accountPassword", accountPassword)
 
         val db = this.writableDatabase
 
+        db.insert(TABLE_NAME, null, defaults)
         db.insert(TABLE_NAME, null, values)
 
         db.close()
 
+    }
+
+    fun verifyAccountExists(emailAddress: String): Cursor?{
+        val db = this.readableDatabase
+
+        return db.rawQuery("SELECT EXISTS(SELECT * FROM $TABLE_NAME WHERE emailAddress='$emailAddress')", null)
+    }
+
+    fun getPasswordFromAccount(emailAddress: String): Cursor?{
+        val db = this.readableDatabase
+        val x = db.rawQuery("SELECT accountPassword FROM $TABLE_NAME WHERE emailAddress='$emailAddress'",null)
+
+//        println(x)
+
+        return x
     }
 
     fun getName(): Cursor? {
@@ -60,8 +84,6 @@ class DatabaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory?):
         // below code returns a cursor to
         // read data from the database
         return db.rawQuery("SELECT * FROM " + TABLE_NAME, null)
-
-
     }
 
 }

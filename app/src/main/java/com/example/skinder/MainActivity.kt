@@ -14,6 +14,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        //get login creds just pulls the info from the text and password fields and returns them
         fun getLoginCredentials(): Pair<String,String>{
                 val loginName = findViewById<EditText>(R.id.etEmailAddress).text.toString()
                 val loginPassword = findViewById<EditText>(R.id.etPassword).text.toString()
@@ -24,6 +25,8 @@ class MainActivity : AppCompatActivity() {
 //                return (loginName == "1") && (loginPassword == "1")
 //            }
 
+        //when the loginb button is clicked the get login creds is callled and then passes the information to the database helper to verifiy the account exists
+        // it also receives the password from the database and compares against what is input, if it matches there is a valid login
         val loginButton: Button = findViewById(R.id.btnLogin)
         loginButton.setOnClickListener{
                 val db = DatabaseHelper(this, null)
@@ -45,6 +48,7 @@ class MainActivity : AppCompatActivity() {
                 else{Toast.makeText(this, "Those credentials were invalid", Toast.LENGTH_LONG).show()}
             }
 
+        //registration button to take you to the registration activity 
         val registerButton: Button = findViewById(R.id.btnRegister)
         registerButton.setOnClickListener{
             val registerActivityIntent = Intent(this@MainActivity, RegisterActivity::class.java)

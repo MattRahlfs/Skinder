@@ -9,6 +9,7 @@ import android.widget.EditText
 import android.widget.Toast
 import android.database.sqlite.SQLiteDatabase
 
+//needed tho create an objeect to return the account paramaters
 private class UserDetailReturn<fn, ln, ea, DOB, pw>(
     val firstName:fn,
     val lastName:ln,
@@ -23,7 +24,7 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(R.layout.activity_register)
 
 
-
+        //get user details function grabs the details from all of the editable inputs
         fun getUserDetails(): UserDetailReturn<String, String, String, String, String> {
 
             val firstName = findViewById<EditText>(R.id.etFirstName).text.toString()
@@ -71,6 +72,8 @@ class RegisterActivity : AppCompatActivity() {
 
         }
 
+        //this is the logic to create an account, it uses the get user details and creates a user object to pass through to the database helper
+        //which creates and saves to the database
         val createAccountButton: Button = findViewById(R.id.btnCreateAccount)
         createAccountButton.setOnClickListener {
             var userDetails = getUserDetails()
@@ -90,6 +93,7 @@ class RegisterActivity : AppCompatActivity() {
 
         }
 
+        //viewing the database is for debugging currently, prints out all of the rows in the database to console.
         val viewDatabaseButton: Button = findViewById(R.id.btnviewDatabase)
         viewDatabaseButton.setOnClickListener{
             val db = DatabaseHelper(this, null)

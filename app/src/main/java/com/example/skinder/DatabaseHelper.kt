@@ -6,8 +6,15 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
+//This class provides the connection to the database and allow for inputs and outputs.
+//in here I am creating the databases in the oncreate function
+//in here I create the accounts on the registration page
+//I verify the account exists in the database and extract the password for the account in seperate functions
 class DatabaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory?):
     SQLiteOpenHelper(context, DATABASE_NAME, factory, DATABASE_VERSION) {
+
+    //the compandion object has default values set so that when the database get created /an account is created for the
+    // first time it will already exist so the initial registration saves correctly
 
     companion object {
         private val DATABASE_NAME = "skinder"
@@ -28,6 +35,8 @@ class DatabaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory?):
         onCreate(db)
     }
 
+    //when creating a new account if the database doesnt already exist/have data in it the new account doesnt save
+    //created default values to generate the database
     fun createNewAccount(
         firstName: String,
         lastName: String,
@@ -58,7 +67,8 @@ class DatabaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory?):
         db.close()
 
     }
-
+    //these two function return if the account exists from a passed through parameter (email are unique values)
+    //and extracts the password based on the email address so that the logic on the registration page can verify if the ceredentials are correct
     fun verifyAccountExists(emailAddress: String): Cursor?{
         val db = this.readableDatabase
 
